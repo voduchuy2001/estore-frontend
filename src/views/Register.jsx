@@ -1,13 +1,16 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner";
+import axios from "../axios";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [isLoading, setIsLoading] = useState();
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -19,12 +22,13 @@ const Register = () => {
     });
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
+    setIsLoading(true)
     const { email, password, confirmPassword } = data;
-    console.log(data)
 
     if (!email || !password || !confirmPassword) {
+      setIsLoading(false);
       toast.error('All inputs are require!')
       return;
     }
@@ -34,7 +38,21 @@ const Register = () => {
       return;
     }
 
-    toast.success('Success')
+    axios.post('/register', {
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+    })
+    .then(function (response) {
+      toast.success(response.data.message)
+      navigate('/login')
+    })
+    .catch(function (error) {
+      toast.error(error.response.data.message)
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
   }
 
   return (
@@ -111,8 +129,15 @@ const Register = () => {
 
                     <div className="my-3">
                       <button 
+                        disabled={isLoading}
                         type="submit" 
-                        className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Sign up</button>
+                        className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
+                        { isLoading && (
+                          <span className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading"></span>
+                          )
+                        }
+                          Sign up
+                      </button>
                     </div>
                   </div>
                 </form>

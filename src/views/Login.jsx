@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner";
+import axios from "../axios";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [isLoading, setIsLoading] = useState();
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -19,17 +22,33 @@ const Login = () => {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
+    setIsLoading(true);
     const { email, password } = data;
-    console.log(data)
 
     if (!email || !password) {
-      toast.error('All inputs are require!')
+      setIsLoading(false);
+      toast.error('All inputs are require!');
       return;
     }
 
-    toast.success('Success')
+    await axios.post('/login', {
+      email: data.email,
+      password: data.password,
+    })
+    .then(function (response) {
+      toast.success(response.data.message);
+      localStorage.setItem('accessToken', response.data.accessToken);
+      navigate('/');
+    })
+    .catch(function (error) {
+      setIsLoading(false)
+      toast.error(error.response.data.message);
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
   }
 
   return (
@@ -93,7 +112,16 @@ const Login = () => {
                     </div>
 
                     <div className="my-3">
-                      <button type="submit" className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Sign in</button>
+                      <button 
+                        disabled={isLoading}
+                        type="submit" 
+                        className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
+                        { isLoading && (
+                          <span className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading"></span>
+                          )
+                        }
+                        Sign in
+                      </button>
                     </div>
                   </div>
                 </form>
