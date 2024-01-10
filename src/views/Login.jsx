@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner";
 import axios from "../axios";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/userSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,12 +13,13 @@ const Login = () => {
     confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState();
+  const dispatch = useDispatch();
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setData((preve) => {
+    setData((pre) => {
       return {
-        ...preve,
+        ...pre,
         [name]: value,
       };
     });
@@ -29,18 +32,21 @@ const Login = () => {
 
     if (!email || !password) {
       setIsLoading(false);
-      toast.error('All inputs are require!');
+      toast.error('Missing input field');
       return;
     }
 
     await axios.post('/login', {
       email: data.email,
       password: data.password,
-    })
+    }, { withCredentials: true })
     .then(function (response) {
       toast.success(response.data.message);
-      localStorage.setItem('accessToken', response.data.accessToken);
-      navigate('/');
+      localStorage.setItem("isLoggedIn", true)
+      dispatch(login(response.data))
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     })
     .catch(function (error) {
       setIsLoading(false)

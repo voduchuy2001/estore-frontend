@@ -14,9 +14,9 @@ const Register = () => {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setData((preve) => {
+    setData((pre) => {
       return {
-        ...preve,
+        ...pre,
         [name]: value,
       };
     });
@@ -45,7 +45,9 @@ const Register = () => {
     })
     .then(function (response) {
       toast.success(response.data.message)
-      navigate('/login')
+      setTimeout(() => {
+        navigate('/login');
+      }, 1000);
     })
     .catch(function (error) {
       toast.error(error.response.data.message)
