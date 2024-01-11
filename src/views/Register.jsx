@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner";
 import axios from "../axios";
+import { useSelector } from "react-redux";
+import Home from "../views/Home";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ const Register = () => {
     confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState();
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -55,6 +58,10 @@ const Register = () => {
     .finally(() => {
       setIsLoading(false);
     });
+  }
+
+  if (isAuthenticated) {
+    return <Home />
   }
 
   return (

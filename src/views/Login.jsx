@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner";
 import axios from "../axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/userSlice";
+import Home from "../views/Home"
 
 const Login = () => {
+  
+
   const navigate = useNavigate();
   const [data, setData] = useState({
     email: "",
@@ -14,6 +17,7 @@ const Login = () => {
   });
   const [isLoading, setIsLoading] = useState();
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +46,6 @@ const Login = () => {
     }, { withCredentials: true })
     .then(function (response) {
       toast.success(response.data.message);
-      localStorage.setItem("isLoggedIn", true)
       dispatch(login(response.data))
       setTimeout(() => {
         navigate('/');
@@ -55,6 +58,10 @@ const Login = () => {
     .finally(() => {
       setIsLoading(false);
     });
+  }
+
+  if (isAuthenticated) {
+    return <Home />
   }
 
   return (
