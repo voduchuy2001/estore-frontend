@@ -13,6 +13,9 @@ import Register from './views/Register.jsx'
 import Profile from './views/Profile.jsx';
 import NewProduct from './views/NewProduct.jsx';
 import { PersistGate } from 'redux-persist/integration/react';
+import CartList from './views/CartList.jsx';
+import Checkout from './views/Checkout.jsx';
+import CallBackVNPay from './views/CallBackVNPay.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,7 +27,10 @@ const router = createBrowserRouter(
       <Route path='login' element={ <Login /> }/>
       <Route path='register' element={ <Register /> }/>
       <Route path='profile' element={ <Profile /> }/>
-      <Route path="new-product" element={<NewProduct />} />
+      <Route path="new-product" element={ <NewProduct /> } />
+      <Route path="list-item" element={ <CartList />} />
+      <Route path="checkout" element={ <Checkout /> } />
+      <Route path="callback-vnpay" element={ <CallBackVNPay /> } />
     </Route>
   )
 )

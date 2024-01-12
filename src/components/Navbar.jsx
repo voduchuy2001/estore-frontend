@@ -1,12 +1,18 @@
 import logo from "../assets/logo.png"
 import { Link } from "react-router-dom"
 import { CiShoppingCart } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NavbarItem from "./NavbarItem";
+import { deleteCartItem } from "../redux/productSlice";
 
 const Header = () => {
   const email = useSelector((state) => state.user.email);
+  const carts = useSelector((state) => state.product.cartItem)
+  const dispatch = useDispatch();
   const isAdmin = "huy@gmail.com";
+  const removeCartItem = (_id) => {
+    dispatch(deleteCartItem(_id))
+  }
 
   return (
     <header className="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700">
@@ -57,7 +63,7 @@ const Header = () => {
         </div>
       </nav>
 
-      <div id="miniCart" className="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full fixed top-0 start-0 transition-all duration-300 transform h-full max-w-xs w-full z-[80] bg-white border-e dark:bg-gray-800 dark:border-gray-700 hidden"tabIndex="-1">
+      <div id="miniCart" className="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full fixed top-0 start-0 transition-all duration-300 transform h-full max-w-md w-full z-[80] bg-white border-e dark:bg-gray-800 dark:border-gray-700 hidden hs-overlay-backdrop-open:bg-slate-100/10" tabIndex="-1">
         <div className="flex justify-between items-center py-3 px-4 border-b dark:border-gray-700">
           <h3 className="font-bold text-gray-800 dark:text-white">
             Your cart
@@ -69,10 +75,81 @@ const Header = () => {
           </button>
         </div>
         
-        <div className="p-4">
-          <p className="text-gray-800 dark:text-gray-400">
-            List cart items
-          </p>
+        <div className="mt-4">
+          <div className="flow-root">
+            <ul role="list" className="-my-6 divide-y divide-gray-200">
+              {
+                carts.slice(0, 2).map((cart) => (
+                  <li className="flex py-6" key={cart._id}>
+                    <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 mx-4">
+                      <img src={`http://localhost:8000/images/${cart.image}`} className="h-full w-full object-cover object-center" />
+                    </div>
+
+                    <div className="mr-4 flex flex-1 flex-col">
+                      <div>
+                        <div className="flex justify-between text-base font-medium text-gray-900">
+                          <h3>
+                            { cart.name }
+                          </h3>
+                          <p className="ml-4">${ cart.price }</p>
+                        </div>
+                        <p className="mt-1 text-sm text-gray-500">{ cart.category }</p>
+                      </div>
+                      <div className="flex flex-1 items-end justify-between text-sm">
+                        <p className="text-gray-500">x { cart.qty }</p>
+                        <div className="flex">
+                          <button
+                            onClick={ () => removeCartItem(cart._id) }
+                            type="button" 
+                            className="font-medium text-red-600 hover:text-red-500">Remove</button>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          {carts.length > 0 && (
+            <div className="mt-6"> 
+              <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                <div className="flex justify-between text-base font-medium text-gray-900">
+                  <p>Total</p>
+                  $ { carts.reduce((total, cart) => total + (cart.price * cart.qty), 0) }
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <Link to={"/checkout"} 
+                  className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 mx-4">Checkout</Link>
+              </div>
+            </div>
+          )}
+
+          {carts.length > 2 && (
+            <div className="mt-4">
+              <Link
+                to={"/list-item"}
+                type="button"
+                className="flex items-center justify-center rounded-md border border-slate-300 bg-white-600 px-6 py-3 text-base font-medium text-slate-700 shadow-sm hover:bg-gray-700 hover:text-white mx-4"
+              >
+                View all items
+              </Link>
+            </div>
+          )}
+
+          <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
+            <p>
+              or
+                <button 
+                  type="button" 
+                  className="font-medium text-indigo-600 hover:text-indigo-500">
+                   Continue Shopping
+                  <span aria-hidden="true"> &rarr;</span>
+                </button>
+            </p>
+          </div>
         </div>
       </div>
     </header>
