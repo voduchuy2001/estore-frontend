@@ -2,17 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 
 const initialState = {
-  productList: [],
   cartItem: [],
 };
 
-export const productSlice = createSlice({
+export const cartSlide = createSlice({
   name: "product",
   initialState,
   reducers: {
-    setDataProduct: (state, action) => {
-      state.productList = [...action.payload];
-    },
     addCartItem: (state, action) => {
       const existingItem = state.cartItem.find(
         (item) => item._id === action.payload._id
@@ -58,15 +54,18 @@ export const productSlice = createSlice({
         state.cartItem[index].total = total;
       }
     },
+    clearCart: (state) => {
+      state.cartItem = [];
+    },
   },
 });
 
 export const {
-  setDataProduct,
   addCartItem,
   deleteCartItem,
   increaseQty,
   decreaseQty,
-} = productSlice.actions;
+  clearCart,
+} = cartSlide.actions;
 
-export default productSlice.reducer;
+export default cartSlide.reducer;

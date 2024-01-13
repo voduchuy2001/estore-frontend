@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
-import { decreaseQty, deleteCartItem, increaseQty } from "../redux/productSlice";
+import { decreaseQty, deleteCartItem, increaseQty } from "../redux/cartSlide";
 import { Link } from "react-router-dom";
+import { formatCurrencyVND } from "../utils/helper";
 
 const CartList = () => {
     const carts = useSelector((state) => state.product.cartItem)
@@ -28,7 +29,7 @@ const CartList = () => {
                 <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                     <div className="mt-5 sm:mt-0">
                         <h2 className="text-lg font-bold text-gray-900">{ cart.name }</h2>
-                        <p className="mt-1 text-xs text-gray-700">${ cart.price }</p>
+                        <p className="mt-1 text-xs text-gray-700"> { formatCurrencyVND(cart.price ) }</p>
                     </div>
 
                         <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
@@ -46,7 +47,7 @@ const CartList = () => {
                                     className="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"> + </button>
                             </div>
                             <div className="flex items-center space-x-4">
-                                <p className="text-sm">${ cart.qty * cart.price }</p>
+                                <p className="text-sm">{ formatCurrencyVND(cart.qty * cart.price) }</p>
                                 <button
                                       onClick={ () => removeCartItem(cart._id) }
                                 >
@@ -66,7 +67,7 @@ const CartList = () => {
                 <div className="flex justify-between">
                     <p className="text-lg font-bold">Total</p>
                     <div className="">
-                        <p className="mb-1 text-lg font-bold">$ { carts.reduce((total, cart) => total + (cart.price * cart.qty), 0) }</p>
+                        <p className="mb-1 text-lg font-bold">{ formatCurrencyVND(carts.reduce((total, cart) => total + (cart.price * cart.qty), 0)) }</p>
                     </div>
                 </div>
                     

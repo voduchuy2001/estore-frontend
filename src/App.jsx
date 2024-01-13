@@ -7,7 +7,7 @@ const App = () => {
   return (
     <div>
       <Navbar />
-        <main className="bg-slate-100 dark:bg-slate-700">
+        <main>
           <Outlet />
         </main>
       <Footer />

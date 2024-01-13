@@ -3,7 +3,8 @@ import { Link } from "react-router-dom"
 import { CiShoppingCart } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import NavbarItem from "./NavbarItem";
-import { deleteCartItem } from "../redux/productSlice";
+import { deleteCartItem } from "../redux/cartSlide";
+import { formatCurrencyVND } from "../utils/helper";
 
 const Header = () => {
   const email = useSelector((state) => state.user.email);
@@ -36,7 +37,6 @@ const Header = () => {
         <div id="navbar-collapse-with-animation" className="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block">
           <div className="flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7">
             <NavbarItem to="/">Home</NavbarItem>
-            <NavbarItem to="/shop">Shop</NavbarItem>
             <NavbarItem to="/about">About</NavbarItem>
             <NavbarItem to="/contact">Contact</NavbarItem>
             { email !== isAdmin ? '' : <NavbarItem to="/new-product">New Product</NavbarItem> }
@@ -91,7 +91,7 @@ const Header = () => {
                           <h3>
                             { cart.name }
                           </h3>
-                          <p className="ml-4">${ cart.price }</p>
+                          <p className="ml-4">{ formatCurrencyVND(cart.price) }</p>
                         </div>
                         <p className="mt-1 text-sm text-gray-500">{ cart.category }</p>
                       </div>
@@ -116,7 +116,7 @@ const Header = () => {
               <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                 <div className="flex justify-between text-base font-medium text-gray-900">
                   <p>Total</p>
-                  $ { carts.reduce((total, cart) => total + (cart.price * cart.qty), 0) }
+                  { formatCurrencyVND(carts.reduce((total, cart) => total + (cart.price * cart.qty), 0)) }
                 </div>
               </div>
 

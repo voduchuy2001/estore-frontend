@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import userSliceReducer from "./userSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import productSlice from "./productSlice";
+import cartSlide from "./cartSlide";
 
 const persistConfig = {
   key: "root",
@@ -10,7 +10,7 @@ const persistConfig = {
 };
 
 const persistedUserReducer = persistReducer(persistConfig, userSliceReducer);
-const persistedProductReducer = persistReducer(persistConfig, productSlice);
+const persistedProductReducer = persistReducer(persistConfig, cartSlide);
 
 export const store = configureStore({
   reducer: {

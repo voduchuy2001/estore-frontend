@@ -1,11 +1,15 @@
 import axios from "../axios";
 import { useState } from "react"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { clearCart } from "../redux/cartSlide";
 
 const Checkout = () => {
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false);
   const carts = useSelector((state) => state.product.cartItem)
+  const dispatch = useDispatch();
 
   const [data, setData] = useState({
     email: "",
@@ -26,12 +30,15 @@ const Checkout = () => {
     e.preventDefault()
     setIsLoading(true)
 
+    const total = parseInt(carts.reduce((total, cart) => total + (cart.price * cart.qty), 0))
+
     await axios.post('/redirect-vnpay', {
       email: data.email,
       name: data.name,
-      total: parseInt(carts.reduce((total, cart) => total + (cart.price * cart.qty), 0)),
+      total: total,
     }, { withCredentials: true })
     .then(function (response) {
+      dispatch(clearCart())
       window.location.href = response.data.url
     })
     .catch(function (error) {
@@ -41,6 +48,10 @@ const Checkout = () => {
     .finally(() => {
       setIsLoading(false);
     });
+  }
+
+  if (!carts.length) {
+    return navigate("/")
   }
 
   return (

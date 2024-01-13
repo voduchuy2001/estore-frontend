@@ -2,16 +2,30 @@ import { useEffect, useState } from "react"
 import axios from "../axios"
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
-import { addCartItem } from "../redux/productSlice";
+import { addCartItem } from "../redux/cartSlide";
+import { formatCurrencyVND } from "../utils/helper";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
   const dispatch = useDispatch();
+  const [data, setData] = useState({
+    search: ""
+  });
+
+  const handleOnchange = (e) => {
+    const { name, value } = e.target;
+    setData((pre) => {
+      return {
+        ...pre,
+        [name]: value,
+      };
+    });
+  }
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('/products');
+        const response = await axios.get(`/products`);
         setProducts(response.data.products);
       } catch (error) {
         toast.error(error.response.data.message);
@@ -20,6 +34,13 @@ const Home = () => {
 
     fetchProducts();
   }, [])
+
+  const searchProduct = async (e) => {
+    e.preventDefault()
+    
+    const response = await axios.get(`/products?search=${data.search}`);
+    setProducts(response.data.products);
+  }
 
   const addToCart = (id, name, price, category, image) => {
     dispatch(
@@ -34,39 +55,16 @@ const Home = () => {
   };
 
   return (
-    <div>
-        <div data-hs-carousel='{
-          "loadingClasses": "opacity-0",
-          "isAutoPlay": true
-          }' className="relative">
-          <div className="hs-carousel relative overflow-hidden w-full min-h-[350px] bg-white mb-5">
-              <div className="hs-carousel-body absolute top-0 bottom-0 start-0 flex flex-nowrap transition-transform duration-700 opacity-0">
-                  <div className="hs-carousel-slide">
-                      <div className="flex justify-center h-full bg-gray-100 p-6">
-                      <span className="self-center text-4xl transition duration-700">First slide</span>
-                      </div>
-                  </div>
-
-                  <div className="hs-carousel-slide">
-                      <div className="flex justify-center h-full bg-gray-200 p-6">
-                      <span className="self-center text-4xl transition duration-700">Second slide</span>
-                      </div>
-                  </div>
-
-                  <div className="hs-carousel-slide">
-                      <div className="flex justify-center h-full bg-gray-300 p-6">
-                      <span className="self-center text-4xl transition duration-700">Third slide</span>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          <div className="hs-carousel-pagination flex justify-center absolute bottom-3 start-0 end-0 space-x-2">
-              <span className="hs-carousel-active:bg-blue-700 hs-carousel-active:border-blue-700 w-3 h-3 border border-gray-400 rounded-full cursor-pointer"></span>
-              <span className="hs-carousel-active:bg-blue-700 hs-carousel-active:border-blue-700 w-3 h-3 border border-gray-400 rounded-full cursor-pointer"></span>
-              <span className="hs-carousel-active:bg-blue-700 hs-carousel-active:border-blue-700 w-3 h-3 border border-gray-400 rounded-full cursor-pointer"></span>
-          </div>
-        </div>
+    <div className="my-10">
+      <form onChange={searchProduct}>
+        <input
+          onChange={handleOnchange}
+          type="text" 
+          id="search" 
+          name="search"
+          className="border mx-16 my-10 py-3 px-4 block w-80 border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600" 
+          placeholder="Search item..."></input>
+      </form>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:mx-16">
             {products.map((product) => (
@@ -77,7 +75,7 @@ const Home = () => {
                         { product.name }
                       </h3>
                       <p className="mt-1 text-gray-500 dark:text-gray-400 line-clamp-2">
-                        { product.description }
+                        { formatCurrencyVND(product.price ) }
                       </p>
                       <button
                         onClick={() => addToCart(product._id, product.name, product.price, product.category, product.image)}
