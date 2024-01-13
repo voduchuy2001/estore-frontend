@@ -1,64 +1,71 @@
-import axios from "../axios";
-import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { clearCart } from "../redux/cartSlide";
+import axios from '../axios'
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { clearCart } from '../redux/cartSlide'
 
 const Checkout = () => {
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const carts = useSelector((state) => state.product.cartItem)
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const [data, setData] = useState({
-    email: "",
-    name: "",
-  });
+    email: '',
+    name: '',
+  })
 
   const handleOnChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setData((pre) => {
       return {
         ...pre,
         [name]: value,
-      };
-    });
-  };
+      }
+    })
+  }
 
   const handleRedirectVNPay = async (e) => {
     e.preventDefault()
     setIsLoading(true)
 
-    const total = parseInt(carts.reduce((total, cart) => total + (cart.price * cart.qty), 0))
+    const total = parseInt(
+      carts.reduce((total, cart) => total + cart.price * cart.qty, 0),
+    )
 
-    await axios.post('/redirect-vnpay', {
-      email: data.email,
-      name: data.name,
-      total: total,
-    }, { withCredentials: true })
-    .then(function (response) {
-      dispatch(clearCart())
-      window.location.href = response.data.url
-    })
-    .catch(function (error) {
-      setIsLoading(false)
-      toast.error(error.response.data.message);
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
+    await axios
+      .post(
+        '/redirect-vnpay',
+        {
+          email: data.email,
+          name: data.name,
+          total: total,
+        },
+        { withCredentials: true },
+      )
+      .then(function (response) {
+        dispatch(clearCart())
+        window.location.href = response.data.url
+      })
+      .catch(function (error) {
+        setIsLoading(false)
+        toast.error(error.response.data.message)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   if (!carts.length) {
-    return navigate("/")
+    return navigate('/')
   }
 
   return (
     <div className="h-full">
-      <div className="dark:bg-slate-900 bg-gray-100 flex h-full items-center py-10">
-        <div className="w-full max-w-md mx-auto p-2">
-          <div className="mt-0 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
+      <div className="flex h-full items-center bg-gray-100 py-10 dark:bg-slate-900">
+        <div className="mx-auto w-full max-w-md p-2">
+          <div className="mt-0 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
@@ -70,40 +77,56 @@ const Checkout = () => {
                 <form onSubmit={handleRedirectVNPay}>
                   <div className="grid gap-y-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm mb-2 dark:text-white">Your name</label>
-                        <input
-                          autoFocus
-                          autoComplete="off"
-                          value={data.name}
-                          onChange={handleOnChange}
-                          placeholder="Enter your name" 
-                          type="text" 
-                          id="name" 
-                          name="name" 
-                          className="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600" />
+                      <label
+                        htmlFor="name"
+                        className="mb-2 block text-sm dark:text-white"
+                      >
+                        Your name
+                      </label>
+                      <input
+                        autoFocus
+                        autoComplete="off"
+                        value={data.name}
+                        onChange={handleOnChange}
+                        placeholder="Enter your name"
+                        type="text"
+                        id="name"
+                        name="name"
+                        className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-400 dark:focus:ring-gray-600"
+                      />
                     </div>
 
                     <div>
-                      <label htmlFor="email" className="block text-sm mb-2 dark:text-white">Your email</label>
-                        <input
-                          value={data.email}
-                          onChange={handleOnChange}
-                          placeholder="Enter your email" 
-                          type="email" 
-                          id="email" 
-                          name="email" 
-                          className="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600" />
+                      <label
+                        htmlFor="email"
+                        className="mb-2 block text-sm dark:text-white"
+                      >
+                        Your email
+                      </label>
+                      <input
+                        value={data.email}
+                        onChange={handleOnChange}
+                        placeholder="Enter your email"
+                        type="email"
+                        id="email"
+                        name="email"
+                        className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-400 dark:focus:ring-gray-600"
+                      />
                     </div>
 
                     <div className="my-3">
-                      <button 
+                      <button
                         disabled={isLoading}
-                        type="submit" 
-                        className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
-                        { isLoading && (
-                          <span className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading"></span>
-                          )
-                        }
+                        type="submit"
+                        className="inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-transparent bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                      >
+                        {isLoading && (
+                          <span
+                            className="inline-block h-4 w-4 animate-spin rounded-full border-[3px] border-current border-t-transparent text-white"
+                            role="status"
+                            aria-label="loading"
+                          ></span>
+                        )}
                         Place Order Now
                       </button>
                     </div>
