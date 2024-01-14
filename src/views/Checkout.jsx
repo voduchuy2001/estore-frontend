@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { clearCart } from '../redux/cartSlide'
+import Button from '../components/Button'
 
 const Checkout = () => {
   const navigate = useNavigate()
@@ -67,12 +68,6 @@ const Checkout = () => {
         <div className="mx-auto w-full max-w-md p-2">
           <div className="mt-0 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div className="p-4 sm:p-7">
-              <div className="text-center">
-                <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-                  Place Order
-                </h1>
-              </div>
-
               <div className="mt-5">
                 <form onSubmit={handleRedirectVNPay}>
                   <div className="grid gap-y-4">
@@ -115,20 +110,12 @@ const Checkout = () => {
                     </div>
 
                     <div className="my-3">
-                      <button
-                        disabled={isLoading}
-                        type="submit"
-                        className="inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-transparent bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                      <Button
+                        className={'w-full justify-center'}
+                        isLoading={isLoading}
                       >
-                        {isLoading && (
-                          <span
-                            className="inline-block h-4 w-4 animate-spin rounded-full border-[3px] border-current border-t-transparent text-white"
-                            role="status"
-                            aria-label="loading"
-                          ></span>
-                        )}
-                        Place Order Now
-                      </button>
+                        Place Order
+                      </Button>
                     </div>
                   </div>
                 </form>

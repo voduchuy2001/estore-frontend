@@ -74,10 +74,10 @@ const Home = () => {
         {products.map((product) => (
           <div
             key={product._id}
-            className="mx-1 mb-10 flex flex-col rounded-2xl border bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900 dark:shadow-slate-700/[.7]"
+            className="mx-1 mb-10 flex flex-col rounded-md border bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900 dark:shadow-slate-700/[.7]"
           >
             <img
-              className="h-auto w-full rounded-t-2xl"
+              className="h-auto w-full rounded-t-md"
               src={
                 product.image
                   ? `${IMAGE_BASE_URL}${product.image}`

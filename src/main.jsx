@@ -20,6 +20,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import CartList from './views/CartList.jsx'
 import Checkout from './views/Checkout.jsx'
 import CallBackVNPay from './views/CallBackVNPay.jsx'
+import CallbackGoogle from './views/CallbackGoogle.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,6 +35,7 @@ const router = createBrowserRouter(
       <Route path="list-item" element={<CartList />} />
       <Route path="checkout" element={<Checkout />} />
       <Route path="callback-vnpay" element={<CallBackVNPay />} />
+      <Route path="callback/auth-google" element={<CallbackGoogle />} />
     </Route>,
   ),
 )

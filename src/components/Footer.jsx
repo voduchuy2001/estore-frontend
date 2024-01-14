@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="mx-auto w-full max-w-[85rem] border border-t px-4 py-10 sm:px-6 lg:px-8 dark:bg-slate-800">
+    <footer className="w-full max-w-full border border-t px-4 py-10 sm:px-6 lg:px-8 dark:bg-slate-800">
       <div className="text-center">
         <div className="mt-3">
           <p className="text-gray-500">© Estore 2024. All rights reserved.</p>

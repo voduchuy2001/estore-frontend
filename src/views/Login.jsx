@@ -65,6 +65,16 @@ const Login = () => {
       })
   }
 
+  const handleRedirectGoogleOAuth2 = async () => {
+    try {
+      await axios.get('/redirect/auth-google').then((response) => {
+        window.location.href = response.data.url
+      })
+    } catch (error) {
+      toast.error(error)
+    }
+  }
+
   if (isAuthenticated) {
     return <Home />
   }
@@ -93,6 +103,7 @@ const Login = () => {
 
               <div className="mt-5">
                 <button
+                  onClick={handleRedirectGoogleOAuth2}
                   type="button"
                   className="inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
                 >
