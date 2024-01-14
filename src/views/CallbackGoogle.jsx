@@ -11,13 +11,17 @@ const CallbackGoogle = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    axios.get(`/callback/auth-google/${location.search}`).then((response) => {
-      toast.success(response.data.message)
-      dispatch(login(response.data))
-      setTimeout(() => {
-        navigate('/')
-      }, 1000)
-    })
+    axios
+      .get(`/callback/auth-google/${location.search}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        toast.success(response.data.message)
+        dispatch(login(response.data))
+        setTimeout(() => {
+          navigate('/')
+        }, 1000)
+      })
   })
 
   return <div>Call back</div>
