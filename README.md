@@ -13,10 +13,15 @@ Currently, two official plugins are available:
 ![image](https://github.com/voduchuy2001/estore/assets/108045338/6e7d693e-8933-4d53-bfe8-549aafe0e943)
 
 ## Mobile
-![image](https://github.com/voduchuy2001/estore/assets/108045338/8a71a089-a8ef-4eb0-800a-bef712cfcdfe)
+<p align="center">
+  <img src="https://github.com/voduchuy2001/estore/assets/108045338/8a71a089-a8ef-4eb0-800a-bef712cfcdfe" alt="Mobile" />
+</p>
 
 ## Use VNPay for online payment
 ![image](https://github.com/voduchuy2001/estore/assets/108045338/8ca4d40d-3aa3-464d-be82-679a249edbf1)
+
+## Intergate Google OAuth2
+![image](https://github.com/voduchuy2001/estore/assets/108045338/9beabd16-d26f-41e2-ac5a-774700867d4d)
 
 **Backend for this project here:** https://github.com/voduchuy2001/estore-backend
 
