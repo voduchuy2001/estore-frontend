@@ -12,15 +12,16 @@ const CallbackGoogle = () => {
 
   useEffect(() => {
     axios
-      .get(`/callback/auth-google/${location.search}`, {
-        withCredentials: true,
-      })
+      .get(`/callback/auth-google/${location.search}`)
       .then((response) => {
         toast.success(response.data.message)
         dispatch(login(response.data))
         setTimeout(() => {
           navigate('/')
         }, 1000)
+      })
+      .catch(function (error) {
+        toast.error(error.response.data.message)
       })
   })
 

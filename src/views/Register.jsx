@@ -6,10 +6,16 @@ import { useSelector } from 'react-redux'
 import Home from '../views/Home'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { z } from 'zod'
 
 const Register = () => {
   const navigate = useNavigate()
   const [data, setData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
+  const [errors, setErrors] = useState({
     email: '',
     password: '',
     confirmPassword: '',
@@ -25,42 +31,76 @@ const Register = () => {
         [name]: value,
       }
     })
+    setErrors((pre) => ({
+      ...pre,
+      [name]: '',
+    }))
   }
+
+  const registerSchema = z
+    .object({
+      email: z.string().email('Must be type of email'),
+      password: z.string().min(6, 'Password is required'),
+      confirmPassword: z.string().min(6, 'Confirm password is required'),
+    })
+    .refine(({ confirmPassword, password }) => {
+      if (confirmPassword !== password) {
+        throw new z.ZodError([
+          {
+            code: 'custom',
+            message: 'Password does not match',
+            path: ['confirmPassword'],
+          },
+        ])
+      }
+      return true
+    })
 
   const handleRegister = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     const { email, password, confirmPassword } = data
 
-    if (!email || !password || !confirmPassword) {
+    try {
+      registerSchema.parse({ email, password, confirmPassword })
+
+      await axios
+        .post('/register', {
+          email: data.email,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+        })
+        .then(function (response) {
+          toast.success(response.data.message)
+          setTimeout(() => {
+            navigate('/login')
+          }, 1000)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    } catch (error) {
       setIsLoading(false)
-      toast.error('All inputs are require!')
-      return
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            [err.path[0]]: err.message,
+          }))
+        })
+      }
+      toast.error(error.response.data.message)
     }
+  }
 
-    if (password !== confirmPassword) {
-      toast.error('Password does not match!')
-      return
+  const handleRedirectGoogleOAuth2 = async () => {
+    try {
+      await axios.get('/redirect/auth-google').then((response) => {
+        window.location.href = response.data.url
+      })
+    } catch (error) {
+      toast.error(error)
     }
-
-    axios
-      .post('/register', {
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-      })
-      .then(function (response) {
-        toast.success(response.data.message)
-        setTimeout(() => {
-          navigate('/login')
-        }, 1000)
-      })
-      .catch(function (error) {
-        toast.error(error.response.data.message)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
   }
 
   if (isAuthenticated) {
@@ -91,6 +131,7 @@ const Register = () => {
 
               <div className="mt-5">
                 <button
+                  onClick={handleRedirectGoogleOAuth2}
                   type="button"
                   className="inline-flex w-full items-center justify-center gap-x-2 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900 dark:text-white dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
                 >
@@ -118,9 +159,8 @@ const Register = () => {
                       fill="#EB4335"
                     />
                   </svg>
-                  Sign up with Google
+                  Sign in with Google
                 </button>
-
                 <div className="flex items-center py-3 text-xs uppercase text-gray-400 before:me-6 before:flex-[1_1_0%] before:border-t before:border-gray-200 after:ms-6 after:flex-[1_1_0%] after:border-t after:border-gray-200 dark:text-gray-500 dark:before:border-gray-600 dark:after:border-gray-600">
                   Or
                 </div>
@@ -135,6 +175,7 @@ const Register = () => {
                       type={'email'}
                       id={'email'}
                       name={'email'}
+                      error={errors.email}
                     />
 
                     <Input
@@ -145,6 +186,7 @@ const Register = () => {
                       type={'password'}
                       id={'password'}
                       name={'password'}
+                      error={errors.password}
                     />
 
                     <Input
@@ -155,6 +197,7 @@ const Register = () => {
                       type={'password'}
                       id={'confirmPassword'}
                       name={'confirmPassword'}
+                      error={errors.confirmPassword}
                     />
 
                     <div className="my-3">

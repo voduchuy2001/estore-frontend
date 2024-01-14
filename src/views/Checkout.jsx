@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { clearCart } from '../redux/cartSlide'
 import Button from '../components/Button'
+import { z } from 'zod'
+import Input from '../components/Input'
 
 const Checkout = () => {
   const navigate = useNavigate()
@@ -15,8 +17,15 @@ const Checkout = () => {
   const [data, setData] = useState({
     email: '',
     name: '',
+    address: '',
+    phoneNumber: '',
   })
-
+  const [errors, setErrors] = useState({
+    email: '',
+    name: '',
+    address: '',
+    phoneNumber: '',
+  })
   const handleOnChange = (e) => {
     const { name, value } = e.target
     setData((pre) => {
@@ -25,37 +34,57 @@ const Checkout = () => {
         [name]: value,
       }
     })
+    setErrors((pre) => ({
+      ...pre,
+      [name]: '',
+    }))
   }
+
+  const phoneRegex =
+    /^(?:\+84|0)(?:3[2-9]|5[2689]|7[06789]|8[1-9]|9[0-9])[0-9]{7}$/
+
+  const checkoutSchema = z.object({
+    name: z.string().min(6, 'Name is required'),
+    email: z.string().email('Must be type of email'),
+    address: z.string().min(6, 'Address is required'),
+    phoneNumber: z.string().regex(phoneRegex, 'Invalid phone number'),
+  })
 
   const handleRedirectVNPay = async (e) => {
     e.preventDefault()
     setIsLoading(true)
+    const { name, email, address, phoneNumber } = data
 
-    const total = parseInt(
-      carts.reduce((total, cart) => total + cart.price * cart.qty, 0),
-    )
+    try {
+      checkoutSchema.parse({ name, email, address, phoneNumber })
 
-    await axios
-      .post(
-        '/redirect-vnpay',
-        {
+      await axios
+        .post('/redirect-vnpay', {
           email: data.email,
           name: data.name,
-          total: total,
-        },
-        { withCredentials: true },
-      )
-      .then(function (response) {
-        dispatch(clearCart())
-        window.location.href = response.data.url
-      })
-      .catch(function (error) {
-        setIsLoading(false)
-        toast.error(error.response.data.message)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+          address: address,
+          phoneNumber: phoneNumber,
+          productIds: carts.map((item) => [item._id, item.qty]),
+        })
+        .then(function (response) {
+          dispatch(clearCart())
+          window.location.href = response.data.url
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    } catch (error) {
+      setIsLoading(false)
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            [err.path[0]]: err.message,
+          }))
+        })
+      }
+      toast.error(error.response.data.message)
+    }
   }
 
   if (!carts.length) {
@@ -72,40 +101,54 @@ const Checkout = () => {
                 <form onSubmit={handleRedirectVNPay}>
                   <div className="grid gap-y-4">
                     <div>
-                      <label
-                        htmlFor="name"
-                        className="mb-2 block text-sm dark:text-white"
-                      >
-                        Your name
-                      </label>
-                      <input
-                        autoFocus
-                        autoComplete="off"
+                      <Input
+                        label={'Your Name'}
                         value={data.name}
                         onChange={handleOnChange}
-                        placeholder="Enter your name"
-                        type="text"
-                        id="name"
-                        name="name"
-                        className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-400 dark:focus:ring-gray-600"
+                        placeholder={'Enter your name'}
+                        type={'text'}
+                        id={'name'}
+                        name={'name'}
+                        error={errors.name}
                       />
                     </div>
 
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="mb-2 block text-sm dark:text-white"
-                      >
-                        Your email
-                      </label>
-                      <input
+                      <Input
+                        label={'Email'}
                         value={data.email}
                         onChange={handleOnChange}
-                        placeholder="Enter your email"
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-400 dark:focus:ring-gray-600"
+                        placeholder={'Enter your email'}
+                        type={'email'}
+                        id={'email'}
+                        name={'email'}
+                        error={errors.email}
+                      />
+                    </div>
+
+                    <div>
+                      <Input
+                        label={'Your Address'}
+                        value={data.address}
+                        onChange={handleOnChange}
+                        placeholder={'Enter your address'}
+                        type={'text'}
+                        id={'address'}
+                        name={'address'}
+                        error={errors.address}
+                      />
+                    </div>
+
+                    <div>
+                      <Input
+                        label={'Your Phone Number'}
+                        value={data.phoneNumber}
+                        onChange={handleOnChange}
+                        placeholder={'Enter your phoneNumber'}
+                        type={'text'}
+                        id={'phoneNumber'}
+                        name={'phoneNumber'}
+                        error={errors.phoneNumber}
                       />
                     </div>
 

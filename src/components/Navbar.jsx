@@ -23,15 +23,13 @@ const Header = () => {
             to={''}
             className="flex-none text-xl font-semibold dark:text-white"
           >
-            <img src={logo} alt="logo" />
+            <img src={logo} alt="Logo" className="h-full w-24" />
           </Link>
           <div className="sm:hidden">
             <button
               type="button"
               className="hs-collapse-toggle flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-sm font-semibold text-gray-800 hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-              data-hs-collapse="#navbar-collapse-with-animation"
-              aria-controls="navbar-collapse-with-animation"
-              aria-label="Toggle navigation"
+              data-hs-collapse="#navbar"
             >
               <svg
                 className="h-4 w-4 hs-collapse-open:hidden"
@@ -59,7 +57,7 @@ const Header = () => {
         </div>
 
         <div
-          id="navbar-collapse-with-animation"
+          id="navbar"
           className="hs-collapse hidden grow basis-full overflow-hidden transition-all duration-300 sm:block"
         >
           <div className="mt-5 flex flex-col gap-x-0 gap-y-4 sm:mt-0 sm:flex-row sm:items-center sm:justify-end sm:gap-x-7 sm:gap-y-0 sm:ps-7">
@@ -111,7 +109,7 @@ const Header = () => {
 
       <div
         id="miniCart"
-        className="hs-overlay fixed start-0 top-0 z-[80] hidden h-full w-full max-w-xs -translate-x-full transform border-e bg-white transition-all duration-300 hs-overlay-open:translate-x-0 dark:border-gray-700 dark:bg-gray-800"
+        className="hs-overlay fixed start-0 top-0 z-[80] hidden h-full w-full max-w-xs -translate-x-full transform overflow-y-auto border-e bg-white transition-all duration-300 hs-overlay-open:translate-x-0 dark:border-gray-700 dark:bg-gray-800"
         tabIndex="-1"
       >
         <div className="flex items-center justify-between border-b px-4 py-3 dark:border-gray-700">
@@ -142,44 +140,42 @@ const Header = () => {
         </div>
 
         <div className="mt-4">
-          <div className="flow-root">
-            <ul role="list" className="-my-6 divide-y divide-gray-200">
-              {carts.slice(0, 2).map((cart) => (
-                <li className="flex py-6" key={cart._id}>
-                  <div className="mx-4 h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                    <img
-                      src={`${IMAGE_BASE_URL}${cart.image}`}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
+          <ul className="-my-6 divide-y divide-gray-200">
+            {carts.map((cart) => (
+              <li className="flex py-6" key={cart._id}>
+                <div className="mx-4 h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                  <img
+                    src={`${IMAGE_BASE_URL}${cart.image}`}
+                    className="h-full w-full object-cover object-center"
+                  />
+                </div>
 
-                  <div className="mr-4 flex flex-1 flex-col">
-                    <div>
-                      <div className="flex justify-between text-base font-medium text-gray-900">
-                        <h3>{cart.name}</h3>
-                        <p className="ml-4">{formatCurrencyVND(cart.price)}</p>
-                      </div>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {cart.category}
-                      </p>
+                <div className="mr-4 flex flex-1 flex-col">
+                  <div>
+                    <div className="flex justify-between text-base font-medium text-gray-900">
+                      <h3>{cart.name}</h3>
+                      <p className="ml-4">{formatCurrencyVND(cart.price)}</p>
                     </div>
-                    <div className="flex flex-1 items-end justify-between text-sm">
-                      <p className="text-gray-500">x {cart.qty}</p>
-                      <div className="flex">
-                        <button
-                          onClick={() => removeCartItem(cart._id)}
-                          type="button"
-                          className="font-medium text-red-600 hover:text-red-500"
-                        >
-                          Remove
-                        </button>
-                      </div>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {cart.category}
+                    </p>
+                  </div>
+                  <div className="flex flex-1 items-end justify-between text-sm">
+                    <p className="text-gray-500">x {cart.qty}</p>
+                    <div className="flex">
+                      <button
+                        onClick={() => removeCartItem(cart._id)}
+                        type="button"
+                        className="font-medium text-red-600 hover:text-red-500"
+                      >
+                        Remove
+                      </button>
                     </div>
                   </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+                </div>
+              </li>
+            ))}
+          </ul>
 
           {carts.length > 0 && (
             <div className="mt-6">
@@ -202,23 +198,21 @@ const Header = () => {
                 >
                   Checkout
                 </Link>
+
+                <div className="mt-4">
+                  <Link
+                    to={'/list-item'}
+                    type="button"
+                    className="bg-white-600 mx-4 flex items-center justify-center rounded-md border border-slate-300 px-6 py-3 text-base font-medium text-slate-700 shadow-sm hover:bg-gray-700 hover:text-white"
+                  >
+                    View all items
+                  </Link>
+                </div>
               </div>
             </div>
           )}
 
-          {carts.length > 2 && (
-            <div className="mt-4">
-              <Link
-                to={'/list-item'}
-                type="button"
-                className="bg-white-600 mx-4 flex items-center justify-center rounded-md border border-slate-300 px-6 py-3 text-base font-medium text-slate-700 shadow-sm hover:bg-gray-700 hover:text-white"
-              >
-                View all items
-              </Link>
-            </div>
-          )}
-
-          <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
+          <div className="my-6 flex justify-center text-center text-sm text-gray-500">
             <p>
               or
               <Link to={'/'}>

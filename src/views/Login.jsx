@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import axios from '../axios'
@@ -13,8 +14,12 @@ const Login = () => {
   const [data, setData] = useState({
     email: '',
     password: '',
-    confirmPassword: '',
   })
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  })
+
   const [isLoading, setIsLoading] = useState()
   const dispatch = useDispatch()
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated)
@@ -27,42 +32,52 @@ const Login = () => {
         [name]: value,
       }
     })
+    setErrors((pre) => ({
+      ...pre,
+      [name]: '',
+    }))
   }
+
+  const loginSchema = z.object({
+    email: z.string().email('Must be type of email'),
+    password: z.string().min(6, 'Password is required'),
+  })
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     const { email, password } = data
 
-    if (!email || !password) {
-      setIsLoading(false)
-      toast.error('Missing input field')
-      return
-    }
+    try {
+      loginSchema.parse({ email, password })
 
-    await axios
-      .post(
-        '/login',
-        {
+      await axios
+        .post('/login', {
           email: data.email,
           password: data.password,
-        },
-        { withCredentials: true },
-      )
-      .then(function (response) {
-        toast.success(response.data.message)
-        dispatch(login(response.data))
-        setTimeout(() => {
-          navigate('/')
-        }, 1000)
-      })
-      .catch(function (error) {
-        setIsLoading(false)
-        toast.error(error.response.data.message)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+        })
+        .then(function (response) {
+          toast.success(response.data.message)
+          dispatch(login(response.data))
+          setTimeout(() => {
+            navigate('/')
+          }, 1000)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    } catch (error) {
+      setIsLoading(false)
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            [err.path[0]]: err.message,
+          }))
+        })
+      }
+      toast.error(error.response.data.message)
+    }
   }
 
   const handleRedirectGoogleOAuth2 = async () => {
@@ -148,6 +163,7 @@ const Login = () => {
                       type={'email'}
                       id={'email'}
                       name={'email'}
+                      error={errors.email}
                     />
 
                     <Input
@@ -158,6 +174,7 @@ const Login = () => {
                       type={'password'}
                       id={'password'}
                       name={'password'}
+                      error={errors.password}
                     />
 
                     <div className="my-3">

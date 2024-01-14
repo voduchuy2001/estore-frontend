@@ -38,15 +38,14 @@ const CartList = () => {
               <img
                 src={`${IMAGE_BASE_URL}${cart.image}`}
                 alt="product-image"
-                className="w-full rounded-lg sm:w-40"
+                className="h-auto w-full rounded-lg sm:w-40"
               />
               <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
                 <div className="mt-5 sm:mt-0">
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">
                     {cart.name}
                   </h2>
-                  <p className="mt-1 text-xs text-gray-700 dark:text-slate-100">
-                    {' '}
+                  <p className="text-md mt-1 text-gray-700 dark:text-slate-100">
                     {formatCurrencyVND(cart.price)}
                   </p>
                 </div>
@@ -57,8 +56,7 @@ const CartList = () => {
                       onClick={() => decrease(cart._id)}
                       className="cursor-pointer rounded-l bg-gray-100 px-3.5 py-1 duration-100 hover:bg-blue-500 hover:text-blue-50 dark:border dark:border-white dark:bg-slate-900 dark:text-slate-100"
                     >
-                      {' '}
-                      -{' '}
+                      -
                     </button>
                     <input
                       readOnly
@@ -70,29 +68,12 @@ const CartList = () => {
                       onClick={() => increase(cart._id)}
                       className=" cursor-pointer rounded-r bg-gray-100 px-3 py-1 duration-100 hover:bg-blue-500 hover:text-blue-50 dark:border dark:border-white dark:bg-slate-900 dark:text-slate-100"
                     >
-                      {' '}
-                      +{' '}
+                      +
                     </button>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <p className="text-sm">
-                      {formatCurrencyVND(cart.qty * cart.price)}
-                    </p>
+                  <div className="flex items-center align-bottom font-semibold">
                     <button onClick={() => removeCartItem(cart._id)}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        className="h-5 w-5 cursor-pointer duration-150 hover:text-red-500"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <span className="text-sm text-red-600">Remove</span>
                     </button>
                   </div>
                 </div>

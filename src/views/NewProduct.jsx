@@ -59,7 +59,6 @@ const NewProduct = () => {
     try {
       setIsLoading(true)
       const response = await axios.post('/new-product', data, {
-        withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -111,11 +110,11 @@ const NewProduct = () => {
                 name="category"
                 options={[
                   { value: '', label: 'Select a category' },
-                  { value: 'mobilePhone', label: 'Mobile Phone' },
-                  { value: 'LaptopMacbok', label: 'Laptop & Macbook' },
-                  { value: 'smartWatch', label: 'Smart Watch' },
-                  { value: 'printer', label: 'Printer' },
-                  { value: 'accessories', label: 'Accessories' },
+                  { value: 'Mobile Phone', label: 'Mobile Phone' },
+                  { value: 'Laptop & Macbok', label: 'Laptop & Macbook' },
+                  { value: 'Smart Watch', label: 'Smart Watch' },
+                  { value: 'Printer', label: 'Printer' },
+                  { value: 'Accessories', label: 'Accessories' },
                 ]}
               />
             </div>
