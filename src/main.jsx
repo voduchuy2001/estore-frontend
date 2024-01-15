@@ -21,6 +21,8 @@ import CartList from './views/CartList.jsx'
 import Checkout from './views/Checkout.jsx'
 import CallBackVNPay from './views/CallBackVNPay.jsx'
 import CallbackGoogle from './views/CallbackGoogle.jsx'
+import ResetPassword from './views/ResetPassword.jsx'
+import ForgotPassword from './views/ForgotPassword.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,6 +38,8 @@ const router = createBrowserRouter(
       <Route path="checkout" element={<Checkout />} />
       <Route path="callback-vnpay" element={<CallBackVNPay />} />
       <Route path="callback/auth-google" element={<CallbackGoogle />} />
+      <Route path="forgot-password" element={<ForgotPassword />} />
+      <Route path="reset-password/:token" element={<ResetPassword />} />
     </Route>,
   ),
 )
