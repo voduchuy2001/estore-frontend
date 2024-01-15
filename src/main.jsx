@@ -24,6 +24,7 @@ import CallbackGoogle from './views/CallbackGoogle.jsx'
 import ResetPassword from './views/ResetPassword.jsx'
 import ForgotPassword from './views/ForgotPassword.jsx'
 import NotFound from './views/NotFound.jsx'
+import OrderList from './views/OrderList.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
       <Route path="callback/auth-google" element={<CallbackGoogle />} />
       <Route path="forgot-password" element={<ForgotPassword />} />
       <Route path="reset-password/:token" element={<ResetPassword />} />
+      <Route path="user-order" element={<OrderList />} />
       <Route path="*" element={<NotFound />} />
     </Route>,
   ),
