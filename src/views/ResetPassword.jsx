@@ -4,8 +4,11 @@ import Input from '../components/Input'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import axios from '../axios'
+import Home from './Home'
+import { useSelector } from 'react-redux'
 
 const ResetPassword = () => {
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated)
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -92,6 +95,10 @@ const ResetPassword = () => {
       }
       toast.error(error.message)
     }
+  }
+
+  if (isAuthenticated) {
+    return <Home />
   }
 
   return (
