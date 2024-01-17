@@ -8,13 +8,22 @@ import Button from '../components/Button'
 import Input from '../components/Input'
 import Textarea from '../components/Textarea'
 import Select from '../components/Select'
+import { z } from 'zod'
 
 const NewProduct = () => {
   const [data, setData] = useState({
     productName: '',
     category: '',
     description: '',
-    price: '',
+    price: null,
+    image: null,
+    previewImage: null,
+  })
+  const [errors, setErrors] = useState({
+    productName: '',
+    category: '',
+    description: '',
+    price: null,
     image: null,
     previewImage: null,
   })
@@ -26,6 +35,10 @@ const NewProduct = () => {
     setData((prev) => ({
       ...prev,
       [name]: value,
+    }))
+    setErrors((pre) => ({
+      ...pre,
+      [name]: '',
     }))
   }
 
@@ -46,18 +59,57 @@ const NewProduct = () => {
     }))
   }
 
+  const MAX_FILE_SIZE = 1024 * 1024 * 5
+  const ACCEPTED_IMAGE_MIME_TYPES = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+  ]
+
+  const newProductSchema = z.object({
+    productName: z.string().min(1, { message: 'Name is required.' }),
+    category: z.string().min(1, { message: 'Category is required.' }),
+    description: z.string().min(1, { message: 'Description is required.' }),
+    price: z.string().refine((value) => Number(value) >= 10000, {
+      message: 'Price must be a number greater than or equal to 10000.',
+    }),
+    image: z
+      .lazy(() =>
+        z
+          .object({
+            name: z.string(),
+            size: z.number(),
+            type: z.string(),
+          })
+          .refine(
+            (file) => file.size <= MAX_FILE_SIZE,
+            `Max image size is 5MB.`,
+          )
+          .refine(
+            (file) => ACCEPTED_IMAGE_MIME_TYPES.includes(file.type),
+            'Only .jpg, .jpeg, .png and .webp formats are supported.',
+          ),
+      )
+      .nullable(),
+  })
+
   const handleNewProduct = async (e) => {
     e.preventDefault()
-    const { productName, category, price, description } = data
-
-    console.log(data)
-    if (!productName || !category || !price || !description) {
-      toast.error('Missing input field')
-      return
-    }
+    const { productName, category, price, description, image } = data
 
     try {
       setIsLoading(true)
+      newProductSchema.parse({
+        productName,
+        category,
+        price,
+        description,
+        image,
+      })
+
+      console.log(data)
+
       const response = await axios.post('/new-product', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -74,7 +126,14 @@ const NewProduct = () => {
         previewImage: null,
       })
     } catch (error) {
-      toast.error(error.response.data.message)
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            [err.path[0]]: err.message,
+          }))
+        })
+      }
     } finally {
       setIsLoading(false)
     }
@@ -92,6 +151,7 @@ const NewProduct = () => {
             <div className="mb-4 sm:mb-8">
               <Input
                 label={'Product Name'}
+                error={errors.productName}
                 value={data.productName}
                 onChange={handleOnChange}
                 placeholder={'Enter product name'}
@@ -108,8 +168,8 @@ const NewProduct = () => {
                 onChange={handleOnChange}
                 id="category"
                 name="category"
+                error={errors.category}
                 options={[
-                  { value: '', label: 'Select a category' },
                   { value: 'Mobile Phone', label: 'Mobile Phone' },
                   { value: 'Laptop & Macbok', label: 'Laptop & Macbook' },
                   { value: 'Smart Watch', label: 'Smart Watch' },
@@ -128,12 +188,14 @@ const NewProduct = () => {
                 type={'number'}
                 id={'price'}
                 name={'price'}
+                error={errors.price}
               />
             </div>
 
             <div className="mb-4 sm:mb-8">
               <Textarea
                 label="Description"
+                error={errors.description}
                 value={data.description}
                 onChange={handleOnChange}
                 id="description"
@@ -144,21 +206,7 @@ const NewProduct = () => {
             </div>
 
             <div className="mb-4 sm:mb-8">
-              <label
-                htmlFor="image"
-                className="mb-2 flex h-40 w-full cursor-pointer items-center justify-center rounded border bg-slate-100 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              >
-                <BsCloudUpload className="h-8 w-8" />
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                id="image"
-                onChange={previewImage}
-                className="hidden"
-              />
-
-              {data.previewImage && (
+              {data.previewImage ? (
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center gap-x-3">
                     <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 dark:border-neutral-700">
@@ -212,6 +260,29 @@ const NewProduct = () => {
                       </svg>
                     </button>
                   </div>
+
+                  {errors.image && (
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                      <span className="font-medium">{errors.image}</span>
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <label
+                    htmlFor="image"
+                    className="mb-2 flex h-40 w-full cursor-pointer items-center justify-center rounded border bg-slate-100 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  >
+                    <BsCloudUpload className="h-8 w-8" />
+                  </label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    id="image"
+                    onChange={previewImage}
+                    className="hidden"
+                    error={errors.image}
+                  />
                 </div>
               )}
             </div>
